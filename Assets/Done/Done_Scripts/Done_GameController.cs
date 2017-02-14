@@ -4,6 +4,8 @@ using System.Collections;
 
 public class Done_GameController : MonoBehaviour
 {
+	private SettingsHolder settingsHolder;
+
 	public GameObject[] hazards;
 	public Vector3 spawnValues;
 	public int hazardCount;
@@ -22,6 +24,12 @@ public class Done_GameController : MonoBehaviour
 	
 	void Start ()
 	{
+		GameObject settingsHolderGameObj = GameObject.Find("SettingsHolder");
+		if (settingsHolderGameObj != null)
+		{
+			settingsHolder = settingsHolderGameObj.GetComponent<SettingsHolder>();
+		}
+
 		gameOver = false;
 		//      restart = false;
 		//      restartText.text = "";
