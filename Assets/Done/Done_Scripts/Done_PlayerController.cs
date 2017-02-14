@@ -9,6 +9,8 @@ public class Done_Boundary
 
 public class Done_PlayerController : MonoBehaviour
 {
+	private SettingsHolder settingsHolder;
+
 	public float speed;
 	public float tilt;
 	public Done_Boundary boundary;
@@ -21,8 +23,16 @@ public class Done_PlayerController : MonoBehaviour
 	
 	private float nextFire;
 	private Quaternion calibrationQuaternion;
+
+	private int weapon2Counter = 0;
 	
 	void Start () {
+		GameObject settingsHolderGameObj = GameObject.Find("SettingsHolder");
+		if (settingsHolderGameObj != null)
+		{
+			settingsHolder = settingsHolderGameObj.GetComponent<SettingsHolder>();
+		}
+
 		CalibrateAccelerometer ();
 	}
 	
@@ -51,17 +61,20 @@ public class Done_PlayerController : MonoBehaviour
 	
 	void FixedUpdate ()
 	{
-		//      float moveHorizontal = Input.GetAxis ("Horizontal");
-		//      float moveVertical = Input.GetAxis ("Vertical");
-		
-		//      Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
-		
-		//      Vector3 accelerationRaw = Input.acceleration;
-		//      Vector3 acceleration = FixAcceleration (accelerationRaw);
-		//      Vector3 movement = new Vector3 (acceleration.x, 0.0f, acceleration.y);
-		
-		Vector2 direction = touchPad.GetDirection ();
-		Vector3 movement = new Vector3 (direction.x, 0.0f, direction.y);
+		weapon2Counter = weapon2Counter + 1;
+
+		Vector3 movement = new Vector3 (0.0f, 0.0f, 0.0f);
+
+		if(settingsHolder.mode == 0){
+			Vector2 direction = touchPad.GetDirection ();
+			movement = new Vector3 (direction.x, 0.0f, direction.y);
+		}
+		else if(settingsHolder.mode == 1){
+			Vector3 accelerationRaw = Input.acceleration;
+			Vector3 acceleration = FixAcceleration (accelerationRaw) * settingsHolder.sensibiliteAccelerometre;
+			movement = new Vector3 (acceleration.x, 0.0f, acceleration.y);
+		}
+
 		rigidbody.velocity = movement * speed;
 		
 		rigidbody.position = new Vector3
@@ -72,5 +85,15 @@ public class Done_PlayerController : MonoBehaviour
 				);
 		
 		rigidbody.rotation = Quaternion.Euler (0.0f, 0.0f, rigidbody.velocity.x * -tilt);
+
 	}
+
+	public void Weapon2Shot() {
+		if(weapon2Counter >= 100) {
+			weapon2Counter = 0;
+			Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+			audio.Play ();
+		}
+	}
+		
 }

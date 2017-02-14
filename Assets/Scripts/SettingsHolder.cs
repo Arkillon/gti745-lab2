@@ -10,10 +10,10 @@ public class SettingsHolder : MonoBehaviour {
 	void Awake() {
 		DontDestroyOnLoad(this);
 		
-		/*if (FindObjectsOfType(GetType()).Length > 1)
+		if (FindObjectsOfType(GetType()).Length > 1)
 		{
 			Destroy(gameObject);
-		}*/
+		}
 	}
 	
 	// Use this for initialization

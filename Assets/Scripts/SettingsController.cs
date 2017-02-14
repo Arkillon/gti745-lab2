@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class SettingsController : MonoBehaviour {
+
+	private SettingsHolder settingsHolder;
+
 	public Button tactileButton;
 	public Button accelerometreButton;
 	public Button facileButton;
@@ -10,7 +13,7 @@ public class SettingsController : MonoBehaviour {
 	public Button difficileButton;
 	public Text accelerometreSliderText;
 	public Slider accelerometreSlider;
-	private SettingsHolder settingsHolder;
+	public GameObject panelSensibilite;
 
 	// Use this for initialization
 	void Start () {
@@ -36,6 +39,8 @@ public class SettingsController : MonoBehaviour {
 		else if(settingsHolder.diff == 2){
 			setDiffDifficile();
 		}
+
+		accelerometreSlider.value = settingsHolder.sensibiliteAccelerometre;
 	}
 	
 	// Update is called once per frame
@@ -47,12 +52,16 @@ public class SettingsController : MonoBehaviour {
 		tactileButton.interactable = false;
 		accelerometreButton.interactable = true;
 
+		panelSensibilite.SetActive (false);
+
 		settingsHolder.setModeTactile ();
 	}
 
 	public void setModeAccelerometre() {
 		tactileButton.interactable = true;
 		accelerometreButton.interactable = false;
+
+		panelSensibilite.SetActive (true);
 
 		settingsHolder.setModeAccelerometre ();
 	}
