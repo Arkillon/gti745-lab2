@@ -14,18 +14,21 @@ public class Done_GameController : MonoBehaviour
 	public float waveWait;
 	
 	public Text scoreText;
-	//  public Text restartText;
 	public Text gameOverText;
 	public GameObject restartButton;
 	public GameObject menuButton;
 	
 	private bool gameOver;
-	//  private bool restart;
+
 	private int score;
 
 	private int weapon2Charge = 0;
 	public Scrollbar weapon2ScrollBar;
+	public GameObject weapon2ScrollBarGO;
 	public GameObject weapon2Button;
+	public Image explosion;
+	private Color explosionColor;
+	private int explosionCounter = 0;
 	
 	void Start ()
 	{
@@ -41,28 +44,18 @@ public class Done_GameController : MonoBehaviour
 		}
 
 		gameOver = false;
-		//      restart = false;
-		//      restartText.text = "";
 		gameOverText.text = "";
 		restartButton.SetActive (false);
 		menuButton.SetActive (false);
 		weapon2Button.SetActive (false);
+		explosion.enabled = false;
 		score = 0;
 		UpdateScore ();
 		StartCoroutine (SpawnWaves ());
-		InvokeRepeating("ChargeWeapon2", 2.0f, 0.5f);
+		InvokeRepeating("ChargeWeapon2", 2.0f, 0.1f);
+		InvokeRepeating("CheckAnimation", 2.0f, 0.1f);
+		explosionColor = explosion.color;
 	}
-	
-	//  void Update ()
-	//  {
-	//      if (restart)
-	//      {
-	//          if (Input.GetKeyDown (KeyCode.R))
-	//          {
-	//              Application.LoadLevel (Application.loadedLevel);
-	//          }
-	//      }
-	//  }
 	
 	IEnumerator SpawnWaves ()
 	{
@@ -98,21 +91,22 @@ public class Done_GameController : MonoBehaviour
 	}
 	void ChargeWeapon2 ()
 	{
-		
 		if (!gameOver){
-			weapon2Charge = weapon2Charge + 5;
 			if(weapon2Charge>100){
 				weapon2Charge = 100;
 			}
 			weapon2ScrollBar.size = (float)weapon2Charge/100;
 			if(weapon2Charge == 100){
+				weapon2ScrollBarGO.SetActive(false);
 				weapon2Button.SetActive(true);
 			}
 			else {
+				weapon2ScrollBarGO.SetActive(true);
 				weapon2Button.SetActive(false);
 			}
 		}
 		else {
+			weapon2ScrollBarGO.SetActive(true);
 			weapon2Button.SetActive(false);
 		}
 	}
@@ -146,9 +140,31 @@ public class Done_GameController : MonoBehaviour
 
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
+		explosion.enabled = true;
+
 		foreach(GameObject item in enemies)
 		{
 			Destroy(item);
+			AddScore(10);
 		}
+	}
+
+	void CheckAnimation ()
+	{
+		Color colorStart = Color.red;
+		Color colorEnd = Color.green;
+		float duration = 1.0F;
+		float lerp = Mathf.PingPong(Time.time, duration) / duration;
+
+		if(explosion.isActiveAndEnabled){
+			explosionCounter = explosionCounter + 1;
+			explosion.color = Color.Lerp(colorStart, colorEnd, lerp);
+		}
+		if(explosionCounter >= 10){
+			explosion.enabled = false;
+			explosion.color = explosionColor;
+			explosionCounter = 0;
+		}
+
 	}
 }
